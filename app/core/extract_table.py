@@ -21,7 +21,12 @@ class TOC(BaseModel):
 async def pdf_to_base64(pdf_bytes: bytes) -> list[str]:
     try:
         doc = pymupdf.open(stream=pdf_bytes, filetype="pdf")
+        get_toc = doc.get_toc()
+        print(get_toc)
         base64_images = []
+
+        if get_toc:
+            pass
 
         for page_num in range(doc.page_count):
             page = doc[page_num]
@@ -43,32 +48,27 @@ async def extract_table(
         pdf_bytes: bytes,
     ) -> TOC:
         
-        pages = await pdf_to_base64(pdf_bytes)
-        tasks = []
+    pages = await pdf_to_base64(pdf_bytes)
+    toc_found = None
 
-        for page_num, page in enumerate(pages, start=1):
-            task = asyncio.create_task(
-                gemini_2_flash.aget_completion(
-                    prompt=IS_TOC_PROMPT.format(page_num=page_num),
-                    img_url=page,
-                    response_format=TOC
-                ))
-            tasks.append(task)
-
-        toc_found = []
-        for future in asyncio.as_completed(tasks):
-            result = await future
+    for page_num, page in enumerate(pages, start=1):
+        try:
+            result = await gemini_2_flash.aget_completion(
+                prompt=IS_TOC_PROMPT.format(page_num=page_num),
+                img_url=page,
+                response_format=TOC,
+            )
             result = json_repair.loads(result)
 
-            if result['is_toc']:
-                toc_found.append(result)
+            if result["is_toc"]:
+                toc_found = result
+                break  
 
-                for task in tasks:
-                    if not task.done():
-                        task.cancel()
-                break 
+        except Exception as e:
+            print(f"Error processing page {page_num}: {e}")
+            continue 
 
-        return toc_found[0]
+    return toc_found
 
              
 
