@@ -70,9 +70,13 @@ class AsyncOpenAICompletion:
             prompt: str,
             img_url: Optional[str] = None,
             chat_history: Optional[List] = None,
-            response_format: Any = {"type": "json_object"}
+            response_format: Any = {"type": "json_object"},
+            system_prompt: str = None
             ):
         
+        if system_prompt:
+            self.system_prompt = system_prompt
+            
         messages = self._create_messages(prompt=prompt, img_url=img_url,chat_history=chat_history) 
 
         response = await self.client.beta.chat.completions.parse(

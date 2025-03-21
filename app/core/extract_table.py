@@ -7,8 +7,8 @@ import base64
 import pymupdf
 import json_repair
 
-from app.core.prompts import IS_TOC_PROMPT
-from app.models.llm import gemini_2_flash
+from app.core.prompts import EXTRACT_TOC_PROMPT
+from app.models.llm import model
 
 class Sections(BaseModel):
     sections: List[str]
@@ -53,8 +53,8 @@ async def extract_table(
 
     for page_num, page in enumerate(pages, start=1):
         try:
-            result = await gemini_2_flash.aget_completion(
-                prompt=IS_TOC_PROMPT.format(page_num=page_num),
+            result = await model.aget_completion(
+                prompt=EXTRACT_TOC_PROMPT.format(page_num=page_num),
                 img_url=page,
                 response_format=TOC,
             )
