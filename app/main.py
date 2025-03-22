@@ -20,7 +20,10 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.logger import logger
-from app.api import upload_documents
+from app.api import (
+    upload_documents,
+    edit_sections
+)
 
 app = FastAPI(title="Agentic LLM Chatbot API", version="1.0.0")
 
@@ -33,6 +36,7 @@ app.add_middleware(
 )
 
 app.include_router(upload_documents.router, prefix="/api", tags=["upload_documents"])
+app.include_router(edit_sections.router, prefix="/api", tags=["compare_sections"])
 
 app.mount("/static", StaticFiles(directory="."), name="static")
 

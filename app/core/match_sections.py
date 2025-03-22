@@ -21,14 +21,17 @@ class MatchSections(BaseModel):
     sections_unique_to_version_B: List[str]
 
 
-async def compare_document_sections(
-        sections_A: List[str],
-        sections_B: List[str],
+async def match_document_sections(
+        sections_A: Dict[str, str],
+        sections_B: Dict[str, str],
     ):
 
+    sections_A_list = list(re.sub(r'^\d+\s+', '', k) for k in sections_A.keys())
+    sections_B_list = list(re.sub(r'^\d+\s+', '', k) for k in sections_B.keys())
+
     prompt = (
-        f"#SECTIONS LIST FROM VERSION A: {list(sections_A.keys)}\n"
-        f"#SECTIONS LIST FROM VERSION B: {list(sections_B.keys)}\n"
+        f"#SECTIONS LIST FROM VERSION A: {sections_A_list}\n"
+        f"#SECTIONS LIST FROM VERSION B: {sections_B_list}\n"
         "\n#OUTPUT:"
     )
 
@@ -47,4 +50,23 @@ async def compare_document_sections(
 
     for sections in [sections_unique_to_version_A, sections_unique_to_version_B]:
         for section in sections.copy():
-            match = process.
+            match = process.extractOne(
+                query=section,
+                choices=matching_sections,
+                # score_cutoff=90,
+                scorer=fuzz.WRatio,
+                processor=utils.default_process)
+
+            if match[1] >= 90: sections.remove(section)
+
+    sections_info = {
+        'matching_sections': matching_sections,
+        'sections_unique_to_version_A': sections_unique_to_version_A,
+        'sections_unique_to_version_B': sections_unique_to_version_B,
+    }
+
+    return {
+        'sections_info': sections_info,
+        'sections_A': sections_A,
+        'sections_B': sections_B,
+    }

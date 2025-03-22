@@ -104,9 +104,9 @@ async def extract_sections(
         re.sub(r'^Appendix \d+|^\d+.?\s+', '', k.replace(":", "")).strip(): {"text": v, "raw_section": k}
         for k, v in sections_cleaned.items() if v != ""
     }
-    sections_cleaned = {
-        re.sub(r'^\d+\s+', '', k): v for k, v in sections_cleaned.items()
-    }
+    # sections_cleaned = {
+    #     re.sub(r'^\d+\s+', '', k): v for k, v in sections_cleaned.items()
+    # }
 
     return sections_cleaned 
 
