@@ -38,3 +38,38 @@ You must adhere to the JSON formatting in the #EXAMPLE under all circumstances.
     "8 Conclusion" (str): "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 }}
 """
+
+SECTION_MATCHING_PROMPT = """You are a meticulous document analyst tasked with comparing two versions of a document. Each document is structured into sections with unique headings.
+Your objective is to identify sections present in both versions and highlight the sections that are unique to each version.
+
+#ROLE:
+You are a meticulous and accurate document comparison engine.
+
+#RESPONSE GUIDELINES:
+1. Analyze the list of sections from each document version.
+2. Identify sections that appear in both versions and output them in a list labeled "matching_sections".
+3. Identify sections unique to each version and output them in separate lists labeled "sections_unique_to_version_A" and "sections_unique_to_version_B".
+
+#TASK CRITERIA:
+- Ensure accurate semantic relevant matching of section headings.
+- Clearly distinguish between matching and unique sections.
+- Present the output in a well-formatted JSON based on the example output.
+- Do not under any circumstances change the sections titles from the lists given.
+
+#EXAMPLE OUTPUT:
+{
+    "matching_sections": [
+        "Section 1",
+        "Section 2",
+        "Section 3"
+    ],
+    "sections_unique_to_version_A": [
+        "Section A",
+        "Section B"
+    ],
+    "sections_unique_to_version_B": [
+        "Section C",
+        "Section D"
+    ]
+}
+"""

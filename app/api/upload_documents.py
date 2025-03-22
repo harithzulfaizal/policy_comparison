@@ -15,13 +15,13 @@ router = APIRouter()
 @router.post("/upload_documents")
 async def upload_documents(
     session_id: str,
-    file_a: UploadFile = File(...),
-    file_b: UploadFile = File(...),
+    file_A: UploadFile = File(...),
+    file_B: UploadFile = File(...),
     ) -> Dict:
 
     tasks = []
 
-    for file in [file_a, file_b]:
+    for file in [file_A, file_B]:
         if file.content_type != "application/pdf":
             raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
         
@@ -39,6 +39,6 @@ async def upload_documents(
     results = await asyncio.gather(*tasks)
 
     return {
-        file_a.filename: results[0],
-        file_b.filename: results[1]
+        file_A.filename: results[0],
+        file_B.filename: results[1]
     }
